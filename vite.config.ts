@@ -26,6 +26,7 @@ const SUPPORTED_LANGUAGES = [
   'fr',
   'pt',
   'nl',
+  'da',
 ] as const;
 const LANG_REGEX = new RegExp(
   `^/(${SUPPORTED_LANGUAGES.join('|')})(?:/(.*))?$`
@@ -405,6 +406,7 @@ export default defineConfig(() => {
           'header-footer': resolve(__dirname, 'src/pages/header-footer.html'),
           'invert-colors': resolve(__dirname, 'src/pages/invert-colors.html'),
           'scanner-effect': resolve(__dirname, 'src/pages/scanner-effect.html'),
+          'pdf-workflow': resolve(__dirname, 'src/pages/pdf-workflow.html'),
           'adjust-colors': resolve(__dirname, 'src/pages/adjust-colors.html'),
           'background-color': resolve(
             __dirname,
