@@ -29,7 +29,7 @@ env:
   VITE_BRAND_NAME: ${{ vars.VITE_BRAND_NAME }}
   VITE_BRAND_LOGO: ${{ vars.VITE_BRAND_LOGO }}
   VITE_FOOTER_TEXT: ${{ vars.VITE_FOOTER_TEXT }}
-  BASE_URL: ${{ vars.BASE_URL }}/ 
+  BASE_URL: ${{ vars.BASE_URL }}
   HUSKY: 0 
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
       - name: Build distribution
         run: |
           # export SIMPLE_MODE=${{ vars.SIMPLE_MODE }}
-          #  export BASE_URL=${{ vars.BASE_URL }}/ 
+          #  export BASE_URL=${{ vars.BASE_URL }}
           npm run build
 
       - name: Setup Pages
@@ -67,5 +67,6 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           artifact_name: github-pages-deployment
+
 
 
