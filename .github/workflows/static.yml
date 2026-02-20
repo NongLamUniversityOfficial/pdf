@@ -29,6 +29,7 @@ env:
   VITE_BRAND_NAME: ${{ vars.VITE_BRAND_NAME }}
   VITE_BRAND_LOGO: ${{ vars.VITE_BRAND_LOGO }}
   VITE_FOOTER_TEXT: ${{ vars.VITE_FOOTER_TEXT }}
+  VITE_DEFAULT_LANGUAGE: ${{ vars.VITE_DEFAULT_LANGUAGE }}
   BASE_URL: ${{ vars.BASE_URL }}
   HUSKY: 0 
 
@@ -67,6 +68,7 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           artifact_name: github-pages-deployment
+
 
 
 
