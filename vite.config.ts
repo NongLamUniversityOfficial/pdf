@@ -14,19 +14,21 @@ import type { OutputBundle } from 'rollup';
 
 const SUPPORTED_LANGUAGES = [
   'en',
+  'ar',
   'be',
+  'da',
   'de',
   'es',
+  'fr',
+  'id',
+  'it',
+  'nl',
+  'pt',
+  'sv',
+  'tr',
+  'vi',
   'zh',
   'zh-TW',
-  'vi',
-  'it',
-  'id',
-  'tr',
-  'fr',
-  'pt',
-  'nl',
-  'da',
 ] as const;
 const LANG_REGEX = new RegExp(
   `^/(${SUPPORTED_LANGUAGES.join('|')})(?:/(.*))?$`
@@ -559,6 +561,10 @@ export default defineConfig(() => {
           ),
           'deskew-pdf': resolve(__dirname, 'src/pages/deskew-pdf.html'),
           'wasm-settings': resolve(__dirname, 'src/pages/wasm-settings.html'),
+          'bates-numbering': resolve(
+            __dirname,
+            'src/pages/bates-numbering.html'
+          ),
         },
       },
     },

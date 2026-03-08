@@ -86,9 +86,14 @@
     "name": "Sidetal",
     "subtitle": "Indsæt sidetal i dokumentet."
   },
+  "batesNumbering": {
+    "name": "Bates-nummerering",
+    "subtitle": "Tilføj sekventielle Bates-numre på tværs af en eller flere PDF-filer."
+  },
   "addWatermark": {
     "name": "Tilføj vandmærke",
-    "subtitle": "Placer tekst eller et billede oven på dine PDF-sider."
+    "subtitle": "Placer tekst eller et billede oven på dine PDF-sider.",
+    "applyToAllPages": "Anvend på alle sider"
   },
   "headerFooter": {
     "name": "Sidehoved og sidefod",
@@ -158,7 +163,8 @@
   },
   "removeBlankPages": {
     "name": "Fjern tomme sider",
-    "subtitle": "Find og fjern automatisk tomme sider."
+    "subtitle": "Find og fjern automatisk tomme sider.",
+    "sensitivityHint": "Højere = strengere, kun helt tomme sider. Lavere = tillader sider med noget indhold."
   },
   "imageToPdf": {
     "name": "Billeder til PDF",

@@ -86,9 +86,14 @@
     "name": "Paginanummers",
     "subtitle": "Paginanummers aan je document toevoegen."
   },
+  "batesNumbering": {
+    "name": "Bates-nummering",
+    "subtitle": "Voeg opeenvolgende Bates-nummers toe aan een of meer PDF-bestanden."
+  },
   "addWatermark": {
     "name": "Watermerk toevoegen",
-    "subtitle": "Tekst of een afbeelding over de pagina's van je PDF stempelen."
+    "subtitle": "Tekst of een afbeelding over de pagina's van je PDF stempelen.",
+    "applyToAllPages": "Op alle pagina's toepassen"
   },
   "headerFooter": {
     "name": "Koptekst & Voettekst",
@@ -158,7 +163,8 @@
   },
   "removeBlankPages": {
     "name": "Blanco pagina's Verwijderen",
-    "subtitle": "Automatisch blanco pagina's detecteren en verwijderen."
+    "subtitle": "Automatisch blanco pagina's detecteren en verwijderen.",
+    "sensitivityHint": "Hoger = strenger, alleen volledig lege pagina's. Lager = staat pagina's met enige inhoud toe."
   },
   "imageToPdf": {
     "name": "Afbeelding naar PDF",
@@ -613,7 +619,7 @@
     "workflowCompleted": "Werkproces voltooid",
     "errorDuringExecution": "Fout tijdens uitvoering",
     "addNodeError": "Voeg minimaal één knooppunt toe om het werkproces uit te voeren.",
-    "needInputOutput": "Om te kunnen functioneren heeft een werkproces heeft tenminste een invoerknoopunt en een uitvoer-knooppunt nodig.",
+    "needInputOutput": "Het werkproces heeft tenminste een invoerknoopunt en een uitvoer-knooppunt nodig.",
     "enterName": "Voer een naam in.",
     "templateExists": "Er bestaat al een sjabloon met deze naam.",
     "templateSaved": "Sjabloon \"{{name}}\" opgeslagen.",

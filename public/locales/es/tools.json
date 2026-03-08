@@ -86,9 +86,14 @@
     "name": "Números de Página",
     "subtitle": "Inserta números de página en tu documento."
   },
+  "batesNumbering": {
+    "name": "Numeración Bates",
+    "subtitle": "Añadir números Bates secuenciales en uno o más archivos PDF."
+  },
   "addWatermark": {
     "name": "Agregar Marca de Agua",
-    "subtitle": "Estampa texto o una imagen sobre tus páginas PDF."
+    "subtitle": "Estampa texto o una imagen sobre tus páginas PDF.",
+    "applyToAllPages": "Aplicar a todas las páginas"
   },
   "headerFooter": {
     "name": "Encabezado y Pie de Página",
@@ -158,7 +163,8 @@
   },
   "removeBlankPages": {
     "name": "Eliminar Páginas en Blanco",
-    "subtitle": "Detecta y elimina automáticamente páginas en blanco."
+    "subtitle": "Detecta y elimina automáticamente páginas en blanco.",
+    "sensitivityHint": "Mayor = más estricto, solo páginas completamente en blanco. Menor = permite páginas con algo de contenido."
   },
   "imageToPdf": {
     "name": "Imágenes a PDF",

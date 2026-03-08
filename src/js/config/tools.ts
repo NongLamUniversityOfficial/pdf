@@ -1,5 +1,5 @@
 // This file centralizes the definition of all available tools, organized by category.
-export const categories = [
+const baseCategories = [
   {
     name: 'Popular Tools',
     tools: [
@@ -107,6 +107,12 @@ export const categories = [
         name: 'Page Numbers',
         icon: 'ph-list-numbers',
         subtitle: 'Insert page numbers into your document.',
+      },
+      {
+        href: import.meta.env.BASE_URL + 'bates-numbering.html',
+        name: 'Bates Numbering',
+        icon: 'ph-hash',
+        subtitle: 'Add sequential Bates numbers across one or more PDF files.',
       },
       {
         href: import.meta.env.BASE_URL + 'add-watermark.html',
@@ -782,3 +788,16 @@ export const categories = [
     ],
   },
 ];
+
+const getToolIdFromHref = (href: string): string => {
+  const match = href.match(/\/([^/]+)\.html$/);
+  return match?.[1] ?? href;
+};
+
+export const categories = baseCategories.map((category) => ({
+  ...category,
+  tools: category.tools.map((tool) => ({
+    ...tool,
+    id: getToolIdFromHref(tool.href),
+  })),
+}));

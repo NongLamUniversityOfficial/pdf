@@ -86,9 +86,14 @@
     "name": "Nomor Halaman",
     "subtitle": "Sisipkan nomor halaman ke dokumen Anda."
   },
+  "batesNumbering": {
+    "name": "Penomoran Bates",
+    "subtitle": "Tambahkan nomor Bates berurutan pada satu atau lebih file PDF."
+  },
   "addWatermark": {
     "name": "Tambah Watermark",
-    "subtitle": "Cap teks atau gambar di atas halaman PDF Anda."
+    "subtitle": "Cap teks atau gambar di atas halaman PDF Anda.",
+    "applyToAllPages": "Terapkan ke semua halaman"
   },
   "headerFooter": {
     "name": "Header & Footer",
@@ -158,7 +163,8 @@
   },
   "removeBlankPages": {
     "name": "Hapus Halaman Kosong",
-    "subtitle": "Deteksi dan hapus halaman kosong secara otomatis."
+    "subtitle": "Deteksi dan hapus halaman kosong secara otomatis.",
+    "sensitivityHint": "Lebih tinggi = lebih ketat, hanya halaman yang benar-benar kosong. Lebih rendah = mengizinkan halaman dengan sedikit konten."
   },
   "imageToPdf": {
     "name": "Gambar ke PDF",

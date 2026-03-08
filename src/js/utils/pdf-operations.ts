@@ -1,4 +1,4 @@
-import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, degrees, rgb, StandardFonts, PageSizes } from 'pdf-lib';
 
 export async function mergePdfs(
   pdfBytesList: Uint8Array[]
@@ -12,7 +12,7 @@ export async function mergePdfs(
     );
     copiedPages.forEach((page) => mergedDoc.addPage(page));
   }
-  return new Uint8Array(await mergedDoc.save());
+  return new Uint8Array(await mergedDoc.save({ addDefaultPage: false }));
 }
 
 export async function splitPdf(
@@ -187,6 +187,9 @@ export interface TextWatermarkOptions {
   color: { r: number; g: number; b: number };
   opacity: number;
   angle: number;
+  x?: number;
+  y?: number;
+  pageIndices?: number[];
 }
 
 export async function addTextWatermark(
@@ -194,19 +197,60 @@ export async function addTextWatermark(
   options: TextWatermarkOptions
 ): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.load(pdfBytes);
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Failed to create canvas context');
+
+  const dpr = 2;
+  const colorR = Math.round(options.color.r * 255);
+  const colorG = Math.round(options.color.g * 255);
+  const colorB = Math.round(options.color.b * 255);
+  const fontStr = `bold ${options.fontSize * dpr}px "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Arabic", Arial, sans-serif`;
+
+  ctx.font = fontStr;
+  const metrics = ctx.measureText(options.text);
+
+  canvas.width = Math.ceil(metrics.width) + 4;
+  canvas.height = Math.ceil(options.fontSize * dpr * 1.4);
+
+  ctx.font = fontStr;
+  ctx.fillStyle = `rgb(${colorR}, ${colorG}, ${colorB})`;
+  ctx.textBaseline = 'middle';
+  ctx.fillText(options.text, 2, canvas.height / 2);
+
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error('Canvas toBlob failed'))),
+      'image/png'
+    );
+  });
+  const imageBytes = new Uint8Array(await blob.arrayBuffer());
+
+  const image = await pdfDoc.embedPng(imageBytes);
   const pages = pdfDoc.getPages();
+  const posX = options.x ?? 0.5;
+  const posY = options.y ?? 0.5;
+  const imgWidth = image.width / dpr;
+  const imgHeight = image.height / dpr;
 
-  for (const page of pages) {
+  const rad = (options.angle * Math.PI) / 180;
+  const halfW = imgWidth / 2;
+  const halfH = imgHeight / 2;
+
+  const targetIndices = options.pageIndices ?? pages.map((_, i) => i);
+  for (const idx of targetIndices) {
+    const page = pages[idx];
+    if (!page) continue;
     const { width, height } = page.getSize();
-    const textWidth = font.widthOfTextAtSize(options.text, options.fontSize);
+    const cx = posX * width;
+    const cy = posY * height;
 
-    page.drawText(options.text, {
-      x: (width - textWidth) / 2,
-      y: height / 2,
-      font,
-      size: options.fontSize,
-      color: rgb(options.color.r, options.color.g, options.color.b),
+    page.drawImage(image, {
+      x: cx - Math.cos(rad) * halfW + Math.sin(rad) * halfH,
+      y: cy - Math.sin(rad) * halfW - Math.cos(rad) * halfH,
+      width: imgWidth,
+      height: imgHeight,
       opacity: options.opacity,
       rotate: degrees(options.angle),
     });
@@ -221,6 +265,9 @@ export interface ImageWatermarkOptions {
   opacity: number;
   angle: number;
   scale: number;
+  x?: number;
+  y?: number;
+  pageIndices?: number[];
 }
 
 export async function addImageWatermark(
@@ -233,15 +280,26 @@ export async function addImageWatermark(
       ? await pdfDoc.embedPng(options.imageBytes)
       : await pdfDoc.embedJpg(options.imageBytes);
   const pages = pdfDoc.getPages();
+  const posX = options.x ?? 0.5;
+  const posY = options.y ?? 0.5;
 
-  for (const page of pages) {
+  const imgWidth = image.width * options.scale;
+  const imgHeight = image.height * options.scale;
+  const rad = (options.angle * Math.PI) / 180;
+  const halfW = imgWidth / 2;
+  const halfH = imgHeight / 2;
+
+  const targetIndices = options.pageIndices ?? pages.map((_, i) => i);
+  for (const idx of targetIndices) {
+    const page = pages[idx];
+    if (!page) continue;
     const { width, height } = page.getSize();
-    const imgWidth = image.width * options.scale;
-    const imgHeight = image.height * options.scale;
+    const cx = posX * width;
+    const cy = posY * height;
 
     page.drawImage(image, {
-      x: (width - imgWidth) / 2,
-      y: (height - imgHeight) / 2,
+      x: cx - Math.cos(rad) * halfW + Math.sin(rad) * halfH,
+      y: cy - Math.sin(rad) * halfW - Math.cos(rad) * halfH,
       width: imgWidth,
       height: imgHeight,
       opacity: options.opacity,
@@ -379,4 +437,88 @@ export async function addPageNumbers(
   }
 
   return new Uint8Array(await pdfDoc.save());
+}
+
+export interface FixPageSizeOptions {
+  targetSize: string;
+  orientation: string;
+  scalingMode: string;
+  backgroundColor: { r: number; g: number; b: number };
+  customWidth?: number;
+  customHeight?: number;
+  customUnits?: string;
+}
+
+export async function fixPageSize(
+  pdfBytes: Uint8Array,
+  options: FixPageSizeOptions
+): Promise<Uint8Array> {
+  let targetWidth: number;
+  let targetHeight: number;
+
+  if (options.targetSize.toLowerCase() === 'custom') {
+    const w = options.customWidth ?? 210;
+    const h = options.customHeight ?? 297;
+    const units = (options.customUnits ?? 'mm').toLowerCase();
+    if (units === 'in') {
+      targetWidth = w * 72;
+      targetHeight = h * 72;
+    } else {
+      targetWidth = w * (72 / 25.4);
+      targetHeight = h * (72 / 25.4);
+    }
+  } else {
+    const selected =
+      PageSizes[options.targetSize as keyof typeof PageSizes] || PageSizes.A4;
+    targetWidth = selected[0];
+    targetHeight = selected[1];
+  }
+
+  const orientation = options.orientation.toLowerCase();
+  if (orientation === 'landscape' && targetWidth < targetHeight) {
+    [targetWidth, targetHeight] = [targetHeight, targetWidth];
+  } else if (orientation === 'portrait' && targetWidth > targetHeight) {
+    [targetWidth, targetHeight] = [targetHeight, targetWidth];
+  }
+
+  const sourceDoc = await PDFDocument.load(pdfBytes);
+  const outputDoc = await PDFDocument.create();
+
+  for (const sourcePage of sourceDoc.getPages()) {
+    const { width: sourceWidth, height: sourceHeight } = sourcePage.getSize();
+    const embeddedPage = await outputDoc.embedPage(sourcePage);
+
+    const outputPage = outputDoc.addPage([targetWidth, targetHeight]);
+    outputPage.drawRectangle({
+      x: 0,
+      y: 0,
+      width: targetWidth,
+      height: targetHeight,
+      color: rgb(
+        options.backgroundColor.r,
+        options.backgroundColor.g,
+        options.backgroundColor.b
+      ),
+    });
+
+    const scaleX = targetWidth / sourceWidth;
+    const scaleY = targetHeight / sourceHeight;
+    const useFill = options.scalingMode.toLowerCase() === 'fill';
+    const scale = useFill ? Math.max(scaleX, scaleY) : Math.min(scaleX, scaleY);
+
+    const scaledWidth = sourceWidth * scale;
+    const scaledHeight = sourceHeight * scale;
+
+    const x = (targetWidth - scaledWidth) / 2;
+    const y = (targetHeight - scaledHeight) / 2;
+
+    outputPage.drawPage(embeddedPage, {
+      x,
+      y,
+      width: scaledWidth,
+      height: scaledHeight,
+    });
+  }
+
+  return new Uint8Array(await outputDoc.save());
 }
